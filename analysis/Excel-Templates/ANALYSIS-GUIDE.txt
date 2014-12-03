@@ -1,0 +1,94 @@
+
+EXCEL ANALYSIS GUIDE
+Enterprise Sales Data Warehouse
+
+========================================
+USING POWERPIVOT (Excel 2013)
+========================================
+
+1. CONNECTING TO DATA WAREHOUSE
+   - Open Excel 2013
+   - Go to PowerPivot tab
+   - Click "Manage Data Model"
+   - Click "Get External Data" > "From Database" > "From SQL Server"
+   - Enter server name and database: SalesDW
+   - Select tables to import
+   - Click "Finish"
+
+2. CREATING RELATIONSHIPS
+   - In PowerPivot window, go to "Design" tab
+   - Click "Create Relationship"
+   - Link dimension tables to fact tables
+   - Example: FactSales[ProductKey] to DimProduct[ProductKey]
+
+3. CREATING CALCULATED COLUMNS
+   - In PowerPivot, select table
+   - Click "Add Column"
+   - Enter DAX formula
+   - Example: =RELATED(DimProduct[ProductName])
+
+4. CREATING MEASURES
+   - Click "New Measure"
+   - Enter DAX formula
+   - Example: Total Sales:=SUM(FactSales[SalesAmount])
+
+5. CREATING PIVOT TABLES
+   - Go back to Excel
+   - Insert > PivotTable
+   - Use PowerPivot data
+   - Drag fields to create analysis
+
+========================================
+USING PIVOT TABLES (Standard Excel)
+========================================
+
+1. CONNECTING TO SSAS CUBE
+   - Data tab > From Other Sources
+   - From Analysis Services
+   - Enter server name
+   - Select cube: SalesDW
+   - Click Finish
+
+2. CREATING PIVOT TABLE
+   - Drag dimensions to Rows/Columns
+   - Drag measures to Values
+   - Apply filters as needed
+
+3. CREATING CHARTS
+   - Select pivot table
+   - Insert > Chart
+   - Choose chart type
+   - Format as needed
+
+========================================
+DAX FORMULAS (PowerPivot)
+========================================
+
+Basic Aggregations:
+- Total Sales = SUM(FactSales[SalesAmount])
+- Average Price = AVERAGE(FactSales[UnitPrice])
+- Count Orders = COUNTROWS(FactSales)
+
+Time Intelligence:
+- YTD Sales = TOTALYTD(SUM(FactSales[SalesAmount]), DimDate[Date])
+- Previous Year = CALCULATE(SUM(FactSales[SalesAmount]), SAMEPERIODLASTYEAR(DimDate[Date]))
+- YoY Growth = DIVIDE([Total Sales] - [Previous Year], [Previous Year])
+
+Filtering:
+- High Value Sales = CALCULATE(SUM(FactSales[SalesAmount]), FactSales[SalesAmount] > 1000)
+- Top 10 Products = CALCULATE(SUM(FactSales[SalesAmount]), TOPN(10, DimProduct, [Total Sales]))
+
+========================================
+TIPS & BEST PRACTICES
+========================================
+
+1. Always refresh data before analysis
+2. Use slicers for interactive filtering
+3. Create named ranges for reusable formulas
+4. Save templates for recurring reports
+5. Document your DAX formulas
+6. Use conditional formatting for insights
+7. Create separate sheets for different analyses
+8. Backup your workbooks regularly
+
+========================================

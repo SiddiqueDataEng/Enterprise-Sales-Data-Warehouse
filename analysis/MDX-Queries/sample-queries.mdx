@@ -1,0 +1,44 @@
+-- MDX Queries for Enterprise-Sales-Data-Warehouse
+-- SQL Server Analysis Services 2008 R2 / 2012
+-- Use in SQL Server Management Studio (MDX Query window)
+
+-- Query 1: Sales by Year and Product Category
+SELECT
+  {[Measures].[Sales Amount], [Measures].[Quantity]} ON COLUMNS,
+  NON EMPTY [Product].[Category].Members ON ROWS
+FROM [SalesDW]
+WHERE [Date].[Year].[2012]
+
+-- Query 2: Top 10 Customers by Sales
+SELECT
+  {[Measures].[Sales Amount]} ON COLUMNS,
+  TOPCOUNT([Customer].[Customer Name].Members, 10, [Measures].[Sales Amount]) ON ROWS
+FROM [SalesDW]
+
+-- Query 3: Year-over-Year Growth
+WITH MEMBER [Measures].[YoY Growth] AS
+  ([Measures].[Sales Amount] - 
+   ([Measures].[Sales Amount], ParallelPeriod([Date].[Year], 1))) /
+  ([Measures].[Sales Amount], ParallelPeriod([Date].[Year], 1))
+SELECT
+  {[Measures].[Sales Amount], [Measures].[YoY Growth]} ON COLUMNS,
+  [Date].[Year].Members ON ROWS
+FROM [SalesDW]
+
+-- Query 4: Sales by Region and Quarter
+SELECT
+  [Date].[Quarter].Members ON COLUMNS,
+  [Geography].[Region].Members ON ROWS
+FROM [SalesDW]
+WHERE [Measures].[Sales Amount]
+
+-- Query 5: Moving Average (3 months)
+WITH MEMBER [Measures].[3 Month Moving Avg] AS
+  Avg(
+    {[Date].[Month].CurrentMember.Lag(2) : [Date].[Month].CurrentMember},
+    [Measures].[Sales Amount]
+  )
+SELECT
+  {[Measures].[Sales Amount], [Measures].[3 Month Moving Avg]} ON COLUMNS,
+  [Date].[Month].Members ON ROWS
+FROM [SalesDW]
